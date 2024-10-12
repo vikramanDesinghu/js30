@@ -1,23 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Type Ahead 👀</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="https://fav.farm/🔥" />
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="https://fav.farm/🔥" />
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="City or State" />
+      <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+      </ul>
+    </form>
+    <script>
+      let cities = [];
+      const endpoint =
+        "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json";
 
-  <form class="search-form">
-    <input type="text" class="search" placeholder="City or State">
-    <ul class="suggestions">
-      <li>Filter for a city</li>
-      <li>or a state</li>
-    </ul>
-  </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
-
-</script>
-</body>
+      fetch(endpoint)
+        .then((res) => res.json())
+        .then((data) => {
+          cities = data;
+        });
+      const displayList = (event) => {
+        const list = document.querySelector(".suggestions");
+        const searchVal = event.target.value.toLowerCase();
+        const citiesList = cities
+          .filter(
+            (c) => c.city.toLowerCase().includes(searchVal) || c.state.toLowerCase().includes(searchVal)
+          )
+          .reduce((acc, { city, state, population }) => {
+            acc += `
+              <li>
+                <span class="name">${city}, ${state}</span>
+                <span class="population">${population}</span>
+              </li>
+            `;
+            return acc;
+          }, "");
+        list.innerHTML = citiesList;
+      };
+      const search = document.querySelector(".search");
+      search.addEventListener("change", displayList);
+      search.addEventListener("keyup", displayList);
+    </script>
+  </body>
 </html>
